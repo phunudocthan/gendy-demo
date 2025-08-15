@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gendy Land - MVP",
-  description: "MVP demo giao diện bản đồ học tập",
+  title: "Gendy Land - Demo",
+  description: "MVP demo EXE101",
 };
 
 export default function RootLayout({
