@@ -3,7 +3,8 @@ import Image from "next/image";
 import { SidebarProvider, useSidebar } from "./SidebarContext";
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
-  const { sidebarOpen, setSidebarOpen } = useSidebar();
+  const { sidebarOpen, setSidebarOpen, selectedCourse, setSelectedCourse } =
+    useSidebar();
 
   return (
     <>
@@ -42,6 +43,26 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           {/* Background cho sidebar body - trong suốt hơn */}
           <div className="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
           <div className="relative z-10 flex flex-col h-full">
+            {/* Course Selection Dropdown */}
+            <div className="mb-4">
+              <select
+                value={selectedCourse}
+                onChange={(e) => setSelectedCourse(e.target.value)}
+                aria-label="Chọn khóa học"
+                className="w-full h-10 px-3 rounded bg-white/20 hover:bg-white/30 transition-colors text-sm text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
+              >
+                <option
+                  value="Tuổi dậy thì có đáng sợ?"
+                  className="text-black bg-white"
+                >
+                  Tuổi dậy thì có đáng sợ?
+                </option>
+                <option value="Ngày đèn đỏ" className="text-black bg-white">
+                  Ngày đèn đỏ
+                </option>
+              </select>
+            </div>
+
             {/* Navigation - tất cả dùng button để đồng nhất */}
             <nav className="space-y-4 flex-1">
               <button className="w-full h-9 px-3 rounded bg-white/10 hover:bg-white/20 transition-colors text-sm text-left flex items-center gap-2">
