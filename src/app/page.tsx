@@ -1,381 +1,237 @@
-"use client";
 import Image from "next/image";
-import { useMemo, useState } from "react";
-import { useSidebar } from "@/components/SidebarContext";
-import { motion } from "framer-motion";
-import UnlockModal from "@/components/UnlockModal";
+import Link from "next/link";
 
-type IslandAsset = {
-  src: string;
-  locked?: boolean;
-};
+const streakDays = [
+  { label: "Mon", active: true },
+  { label: "Tue", active: true },
+  { label: "Wed", active: false },
+  { label: "Thu", active: true },
+  { label: "Fri", active: true },
+  { label: "Sat", active: true },
+  { label: "Sun", active: false },
+  { label: "Mon", active: true },
+  { label: "Tue", active: true },
+  { label: "Wed", active: true },
+];
 
-const FIRST_ISLAND = "/assets/first_lession_island.png";
-// const LAST_ISLAND = "/assets/island_locked_last_session_demo.png";
+const courses = [
+  {
+    id: "c1",
+    progress: 85,
+    title: "Độ tuổi 7-10: Tuổi dậy thì cũng bình thường thôi!",
+    pendingLessons: 2,
+    pendingQuestions: 10,
+    rating: [true, true, true, true, false],
+  },
+  {
+    id: "c2",
+    progress: 35,
+    title: "Độ tuổi 7-10: Nam với nữ khác nhau ư?",
+    pendingLessons: 6,
+    pendingQuestions: 18,
+    rating: [true, true, false, false, false],
+  },
+  {
+    id: "c3",
+    progress: 100,
+    title: "Độ tuổi 7-10: Áo giáp phòng thủ?",
+    pendingLessons: 0,
+    pendingQuestions: 6,
+    rating: [true, true, true, true, true],
+  },
+];
 
-// Demo: bỏ random và danh sách ứng viên, dùng cấu hình tĩnh ở dưới
+const conversation = [
+  {
+    speaker: "Pango",
+    text: "Xin chào! Tôi có thể giúp gì cho bạn?",
+  },
+  {
+    speaker: "Bạn",
+    text: "Mình muốn tìm hiểu về giáo dục giới tính! Mình nên bắt đầu như thế nào?",
+  },
+  {
+    speaker: "Pango",
+    text: "Gendy Land có hệ thống bài giảng phân chia theo nhiều độ tuổi! Hãy để mình giúp bạn gợi ý các khóa học phù hợp nhé!",
+  },
+];
 
-export default function Home() {
-  const { sidebarOpen } = useSidebar();
-
-  // State cho unlocking system
-  const [unlockedLessons, setUnlockedLessons] = useState<string[]>([
-    "b1",
-    "b2",
-  ]);
-  const [showUnlockModal, setShowUnlockModal] = useState(false);
-  const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
-
-  // Không dùng random cho demo 4 đảo
-
-  // Layout với dịch chuyển - bạn tự chỉnh số dịch chuyển
-  const shiftAmount = 8; // Bạn tự chỉnh số này
-  const nodes = useMemo(() => {
-    return [
-      {
-        id: "b1",
-        label: "BÀI 1",
-        x: sidebarOpen ? 10 + shiftAmount : 5,
-        y: 50,
-        island: { src: FIRST_ISLAND },
-        locked: !unlockedLessons.includes("b1"),
-        size: "sm" as const,
-        checkpoint: unlockedLessons.includes("b1")
-          ? "/assets/unlocked_checkpointer.png"
-          : "/assets/locked_checkpointer.png",
-      },
-      {
-        id: "b2",
-        label: "BÀI 2",
-        x: sidebarOpen ? 24 + shiftAmount : 24,
-        y: 10,
-        island: {
-          src: unlockedLessons.includes("b2")
-            ? "/assets/island_01_unlocked_session_demo.png"
-            : "/assets/island_01_locked_session_demo.png",
-        },
-        locked: !unlockedLessons.includes("b2"),
-        size: "md" as const,
-        checkpoint: unlockedLessons.includes("b2")
-          ? "/assets/unlocked_checkpointer.png"
-          : "/assets/locked_checkpointer.png",
-      },
-      {
-        id: "b3",
-        label: "BÀI 3",
-        x: sidebarOpen ? 41 + shiftAmount : 43,
-        y: 50,
-        island: {
-          src: unlockedLessons.includes("b3")
-            ? "/assets/island_01_unlocked_session_demo.png"
-            : "/assets/island_01_locked_session_demo.png",
-        },
-        locked: !unlockedLessons.includes("b3"),
-        size: "md" as const,
-        checkpoint: unlockedLessons.includes("b3")
-          ? "/assets/unlocked_checkpointer.png"
-          : "/assets/locked_checkpointer.png",
-      },
-      {
-        id: "b4",
-        label: "BÀI 4",
-        x: sidebarOpen ? 61 + shiftAmount : 64,
-        y: 10,
-        island: {
-          src: unlockedLessons.includes("b4")
-            ? "/assets/island_02_unlocked_session_demo.png"
-            : "/assets/island_02_locked_session_demo.png",
-        },
-        locked: !unlockedLessons.includes("b4"),
-        size: "md" as const,
-        checkpoint: unlockedLessons.includes("b4")
-          ? "/assets/unlocked_checkpointer.png"
-          : "/assets/locked_checkpointer.png",
-      },
-      {
-        id: "final",
-        label: "TỔNG KẾT",
-        x: sidebarOpen ? 79 + shiftAmount : 82,
-        y: 25,
-        island: {
-          src: "/assets/island_locked_last_session_demo.png", // TỔNG KẾT luôn locked trong demo
-        },
-        locked: !unlockedLessons.includes("final"),
-        size: "lg" as const,
-        checkpoint: unlockedLessons.includes("final")
-          ? "/assets/unlocked_checkpointer.png"
-          : "/assets/locked_checkpointer.png",
-      },
-    ];
-  }, [sidebarOpen, unlockedLessons]);
-
-  // Handlers cho unlock system
-  const handleIslandClick = (nodeId: string, isLocked: boolean) => {
-    if (isLocked) {
-      setSelectedLesson(nodeId);
-      setShowUnlockModal(true);
-    } else {
-      // Đã unlock - có thể navigate đến bài học
-      console.log(`Navigating to lesson: ${nodeId}`);
-    }
-  };
-
-  const handleUnlockConfirm = () => {
-    if (selectedLesson) {
-      setUnlockedLessons((prev) => [...prev, selectedLesson]);
-      setShowUnlockModal(false);
-      setSelectedLesson(null);
-    }
-  };
-
-  const handleUnlockCancel = () => {
-    setShowUnlockModal(false);
-    setSelectedLesson(null);
-  };
-
-  // Anchor points cũng dịch chuyển theo - bạn tự chỉnh
-  const anchors = {
-    b1: { x: sidebarOpen ? 12 + shiftAmount : 9, y: 34 },
-    b2: { x: sidebarOpen ? 27 + shiftAmount : 27, y: 15 },
-    b3: { x: sidebarOpen ? 44 + shiftAmount : 45, y: 32 },
-    b4: { x: sidebarOpen ? 64 + shiftAmount : 67, y: 14 },
-    final: { x: sidebarOpen ? 89 + shiftAmount : 89, y: 26 },
-  };
-
-  const anchor = (id: string) => {
-    return anchors[id as keyof typeof anchors];
-  };
-
-  // Tọa độ đã chuẩn hóa về 0-100, SVG và CSS đồng bộ
-
+export default function OverviewPage() {
   return (
-    <div className="relative min-h-[calc(100vh_-_5rem)] overflow-hidden">
-      {/* Mây ngẫu nhiên */}
-      <Clouds />
+    <div className="px-4 py-6 text-white md:px-6 lg:px-8">
+      <div className="grid gap-6 md:grid-cols-[minmax(0,_2.2fr)_minmax(0,_1fr)] md:items-start">
+        <div className="space-y-6">
+          <section className="rounded-3xl border border-white/10 bg-black/20 p-6 shadow-xl backdrop-blur">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-4">
+                <div className="relative h-20 w-20">
+                  <div className="absolute inset-0 rounded-full bg-white/15" />
+                  <Image
+                    src="/assets/demo_avatar.png"
+                    alt="Ảnh đại diện của Pango"
+                    fill
+                    className="rounded-full object-cover p-3"
+                    sizes="80px"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm text-white/70">Xin chào,</p>
+                  <h1 className="text-2xl font-semibold text-white">Pango Nek</h1>
+                  <p className="mt-1 text-sm text-white/70">
+                    Hôm nay bạn đã sẵn sàng tiếp tục hành trình khám phá bản thân chưa?
+                  </p>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-center text-sm text-white/75">
+                <p className="font-medium text-white">Lộ trình hiện tại</p>
+                <p className="mt-1 text-white/60">Khóa học: 7-10 tuổi - Tìm hiểu bản thân</p>
+              </div>
+            </div>
+          </section>
 
-      {/* SVG lines với animation đơn giản */}
-      <svg
-        className="absolute inset-0 z-[2] pointer-events-none svg-lines"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-      >
-        <g
-          stroke="#9dd0ff"
-          strokeWidth={0.3}
-          strokeDasharray="1 2"
-          strokeLinecap="round"
-          fill="none"
-          opacity={0.9}
-        >
-          <motion.line
-            x1={anchor("b1").x}
-            y1={anchor("b1").y}
-            x2={anchor("b2").x}
-            y2={anchor("b2").y}
-            animate={{
-              x1: anchor("b1").x,
-              y1: anchor("b1").y,
-              x2: anchor("b2").x,
-              y2: anchor("b2").y,
-            }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-          />
-          <motion.line
-            x1={anchor("b2").x}
-            y1={anchor("b2").y}
-            x2={anchor("b3").x}
-            y2={anchor("b3").y}
-            animate={{
-              x1: anchor("b2").x,
-              y1: anchor("b2").y,
-              x2: anchor("b3").x,
-              y2: anchor("b3").y,
-            }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-          />
-          <motion.line
-            x1={anchor("b3").x}
-            y1={anchor("b3").y}
-            x2={anchor("b4").x}
-            y2={anchor("b4").y}
-            animate={{
-              x1: anchor("b3").x,
-              y1: anchor("b3").y,
-              x2: anchor("b4").x,
-              y2: anchor("b4").y,
-            }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-          />
-          <motion.line
-            x1={anchor("b4").x}
-            y1={anchor("b4").y}
-            x2={anchor("final").x}
-            y2={anchor("final").y}
-            animate={{
-              x1: anchor("b4").x,
-              y1: anchor("b4").y,
-              x2: anchor("final").x,
-              y2: anchor("final").y,
-            }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-          />
-        </g>
-      </svg>
+          <section className="rounded-3xl border border-white/10 bg-black/20 p-6 shadow-xl backdrop-blur">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-white">Chuỗi hoạt động</h2>
+              <span className="text-sm text-white/60">Giữ lửa 10 ngày liên tục!</span>
+            </div>
+            <div className="mt-6 grid grid-cols-5 gap-4 sm:grid-cols-10">
+              {streakDays.map((day, index) => (
+                <div
+                  key={`${day.label}-${index}`}
+                  className="flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-3"
+                >
+                  <span className="text-xs font-medium text-white/60">{day.label}</span>
+                  <Image
+                    src={
+                      day.active
+                        ? "/assets/streak_fire_on.png"
+                        : "/assets/streak_fire_off.png"
+                    }
+                    alt={day.active ? "Đã hoàn thành" : "Chưa hoàn thành"}
+                    width={36}
+                    height={36}
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
 
-      {/* Đảo định vị theo toàn màn hình (không trong container) */}
-      {nodes.map((n) => (
-        <MapIsland
-          key={n.id}
-          label={n.label}
-          checkpoint={n.checkpoint}
-          island={n.island}
-          x={n.x}
-          y={n.y}
-          size={n.size}
-          locked={n.locked}
-          withBigCloud={n.id === "final"}
-          onClick={() => handleIslandClick(n.id, n.locked)}
-        />
-      ))}
+          <section className="space-y-4">
+            <h2 className="px-2 text-lg font-semibold text-white">Khóa học gần nhất</h2>
+            <div className="space-y-4">
+              {courses.map((course) => (
+                <CourseCard key={course.id} course={course} />
+              ))}
+            </div>
+          </section>
+        </div>
 
-      {/* Unlock Modal */}
-      <UnlockModal
-        isOpen={showUnlockModal}
-        onConfirm={handleUnlockConfirm}
-        onCancel={handleUnlockCancel}
-        lessonName={
-          selectedLesson
-            ? nodes.find((n) => n.id === selectedLesson)?.label || ""
-            : ""
-        }
-      />
+        <aside className="space-y-6 md:sticky md:top-24 md:self-start">
+          <section className="rounded-3xl border border-white/10 bg-black/20 p-6 shadow-xl backdrop-blur">
+            <h2 className="text-xl font-semibold text-white">Trò chuyện cùng Pango</h2>
+            <div className="mt-4 inline-flex max-w-xs rounded-3xl border border-white/40 bg-white px-4 py-3 text-sm text-slate-700">
+              Gendy Land có hệ thống bài giảng phân chia theo nhiều độ tuổi! Hãy để mình gợi ý
+              các khóa học phù hợp nhé!
+            </div>
+            <div className="mt-6 flex flex-col items-center">
+              <Image
+                src="/assets/pango.png"
+                alt="Linh vật Pango"
+                width={220}
+                height={240}
+                className="drop-shadow-xl"
+                priority
+              />
+            </div>
+            <div className="mt-6 space-y-3 rounded-3xl border border-white/10 bg-black/40 p-4 text-sm text-white/80">
+              {conversation.map((entry, index) => (
+                <p key={index} className="leading-relaxed">
+                  <span className="font-semibold text-white">{entry.speaker}:</span>{" "}
+                  <span className="text-white/80">{entry.text}</span>
+                </p>
+              ))}
+            </div>
+            <div className="mt-4 flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-4 py-2">
+              <input
+                type="text"
+                placeholder="Nhập câu hỏi bạn muốn hỏi..."
+                className="flex-1 bg-transparent text-sm text-white placeholder-white/50 outline-none"
+              />
+              <button
+                type="button"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-400 text-base font-semibold text-slate-900 transition hover:bg-orange-300"
+                aria-label="Gửi câu hỏi"
+              >
+                ➜
+              </button>
+            </div>
+          </section>
+        </aside>
+      </div>
     </div>
   );
 }
 
-function MapIsland({
-  label,
-  checkpoint,
-  island,
-  x,
-  y,
-  size = "md",
-  locked,
-  withBigCloud,
-  onClick,
+function CourseCard({
+  course,
 }: {
-  label: string;
-  checkpoint: string;
-  island: IslandAsset;
-  x: number;
-  y: number;
-  size?: "sm" | "md" | "lg";
-  locked?: boolean;
-  withBigCloud?: boolean;
-  onClick?: () => void;
+  course: {
+    id: string;
+    title: string;
+    progress: number;
+    pendingLessons: number;
+    pendingQuestions: number;
+    rating: boolean[];
+  };
 }) {
-  // Thu nhỏ kích thước đảo để gọn màn hình (zic-zac)
-  const width = size === "lg" ? 220 : size === "sm" ? 80 : 100;
-  const height = size === "lg" ? 180 : size === "sm" ? 80 : 100;
-  const checkpointSize = size === "lg" ? 80 : size === "sm" ? 70 : 75;
-  const cloudSrc = useMemo(() => {
-    if (withBigCloud) return "/assets/big_cloud.png";
-    const hash = Array.from(label).reduce((a, c) => a + c.charCodeAt(0), 0);
-    return hash % 2 === 0
-      ? "/assets/medium_cloud.png"
-      : "/assets/small_cloud.png";
-  }, [withBigCloud, label]);
-
-  return (
-    <motion.div
-      className="absolute text-center z-[5] cursor-pointer"
-      style={{ left: `${x}%`, top: `${y}%` }}
-      onClick={onClick}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      animate={{
-        left: `${x}%`,
-        top: `${y}%`,
-      }}
-      transition={{
-        duration: 0.3,
-        ease: "easeInOut",
-      }}
-    >
-      <div className="relative inline-flex items-center justify-center mb-2 z-10 drop-shadow">
-        <Image
-          src={checkpoint}
-          alt="checkpoint"
-          width={checkpointSize}
-          height={checkpointSize}
-        />
-        <span
-          className={`absolute font-semibold text-[11px] sm:text-xs transform -translate-y-0.5 ${
-            locked ? "text-slate-700" : "text-white"
-          }`}
-        >
-          {label}
-        </span>
-      </div>
-      <Image
-        src={island.src}
-        alt={label}
-        width={width}
-        height={height}
-        className={`drop-shadow-xl ${
-          locked || island.locked ? "grayscale" : ""
-        }`}
-      />
-    </motion.div>
-  );
-}
-
-function Clouds() {
-  type Cloud = {
-    id: number;
-    src: string;
-    top: number;
-    left: number;
-    w: number;
-    h: number;
-    opacity: number;
+  const progressStyle = {
+    background: `conic-gradient(#45c9ff ${course.progress}%, rgba(255,255,255,0.08) ${course.progress}% 100%)`,
   };
 
-  // Tạo mây một lần duy nhất khi mount để không "nhảy múa" khi component re-render
-  const [clouds] = useState<Cloud[]>(() => {
-    return Array.from({ length: 12 }).map((_, i) => {
-      const isMedium = Math.random() > 0.55;
-      const src = isMedium
-        ? "/assets/medium_cloud.png"
-        : "/assets/small_cloud.png";
-      const bottomBias = Math.random() < 0.65;
-      const top = bottomBias
-        ? Math.floor(Math.random() * 35) + 55
-        : Math.floor(Math.random() * 40) + 5;
-      let left = Math.floor(Math.random() * 90) + 2;
-      if (left > 35 && left < 60 && Math.random() < 0.8) {
-        left = left < 48 ? 25 : 70;
-      }
-      const w = isMedium ? 120 : 80;
-      const h = isMedium ? 70 : 50;
-      const opacity = 0.55 + Math.random() * 0.3;
-      return { id: i, src, top, left, w, h, opacity };
-    });
-  });
-
   return (
-    <>
-      {clouds.map((c) => (
-        <Image
-          key={c.id}
-          src={c.src}
-          alt="cloud"
-          width={c.w}
-          height={c.h}
-          style={{ top: `${c.top}%`, left: `${c.left}%`, opacity: c.opacity }}
-          className="absolute z-[1] select-none pointer-events-none"
-        />
-      ))}
-    </>
+    <div className="flex flex-col justify-between gap-5 rounded-3xl border border-white/10 bg-black/25 p-5 shadow-lg backdrop-blur md:flex-row md:items-center">
+      <div className="flex items-center gap-5">
+        <div className="relative flex h-24 w-24 items-center justify-center">
+          <div className="absolute inset-0 rounded-full border border-white/15 bg-white/5" />
+          <div
+            className="absolute inset-1 rounded-full border border-white/15"
+            style={progressStyle}
+          />
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-black/70 text-xl font-semibold">
+            {course.progress}%
+          </div>
+        </div>
+        <div className="space-y-2 text-sm text-white/80">
+          <h3 className="text-base font-semibold text-white">{course.title}</h3>
+          <p>Số bài giảng chưa xem: {course.pendingLessons} bài giảng</p>
+          <p>Số câu hỏi chưa trả lời: {course.pendingQuestions} câu hỏi</p>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-white/70">Đánh giá hiện tại:</span>
+            <div className="flex items-center gap-1">
+              {course.rating.map((isActive, idx) => (
+                <Image
+                  key={idx}
+                  src={
+                    isActive
+                      ? "/assets/streak_fire_on.png"
+                      : "/assets/streak_fire_off.png"
+                  }
+                  alt={isActive ? "Đánh giá tích cực" : "Đánh giá đang cải thiện"}
+                  width={24}
+                  height={24}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <Link
+        href="/khoa-hoc-cua-toi"
+        className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-medium text-white transition hover:bg-white/20"
+      >
+        Tiếp tục học
+        <span aria-hidden>→</span>
+      </Link>
+    </div>
   );
 }

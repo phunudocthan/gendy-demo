@@ -1,14 +1,35 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { SidebarProvider, useSidebar } from "./SidebarContext";
+
+const primaryNav = [
+  {
+    label: "Tổng Quan",
+    href: "/",
+    icon: "/assets/tong_quan.png",
+  },
+  {
+    label: "Kế Hoạch Học Tập",
+    href: "/ke-hoach-hoc-tap",
+    icon: "/assets/ke_hoach_hoc_tap.png",
+  },
+  {
+    label: "Khóa Học Của Tôi",
+    href: "/khoa-hoc-cua-toi",
+    icon: "/assets/khoa_hoc_cua_toi.png",
+  },
+];
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const { sidebarOpen, setSidebarOpen, selectedCourse, setSelectedCourse } =
     useSidebar();
+  const pathname = usePathname();
 
   return (
     <>
-      {/* Background lớn (có mặt trời) phủ toàn trang */}
+      {/* Global background layers */}
       <div className="fixed inset-0 -z-20">
         <Image
           src="/assets/post_background.png"
@@ -19,7 +40,6 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         />
       </div>
 
-      {/* Body background phủ từ dưới header xuống - toàn màn hình */}
       <div className="fixed left-0 right-0 bottom-0 top-20 -z-10">
         <Image
           src="/assets/body_background.png"
@@ -31,68 +51,61 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       </div>
 
       <div className="flex min-h-screen">
-        {/* Sidebar - chỉ từ phần body xuống, không đè header */}
+        {/* Sidebar */}
         <aside
-          className={`
-            flex w-64 shrink-0 flex-col gap-4 text-white/90 p-4 z-20
-            transition-transform duration-300 ease-in-out
-            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-            fixed h-[calc(100vh-5rem)] top-20
-        `}
+          className={`fixed top-20 z-20 flex h-[calc(100vh-5rem)] w-64 shrink-0 flex-col gap-4 p-4 text-white/90 transition-transform duration-300 ease-in-out ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         >
-          {/* Background cho sidebar body - trong suốt hơn */}
-          <div className="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
-          <div className="relative z-10 flex flex-col h-full">
-            {/* Course Selection Dropdown */}
+          <div className="absolute inset-0 bg-black/10 backdrop-blur-sm" />
+          <div className="relative z-10 flex h-full flex-col">
             <div className="mb-4">
               <select
                 value={selectedCourse}
                 onChange={(e) => setSelectedCourse(e.target.value)}
                 aria-label="Chọn khóa học"
-                className="w-full h-10 px-3 rounded bg-white/20 hover:bg-white/30 transition-colors text-sm text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
+                className="h-10 w-full rounded border border-white/30 bg-white/20 px-3 text-sm text-white transition-colors hover:bg-white/30 focus:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
               >
-                <option
-                  value="Tuổi dậy thì có đáng sợ?"
-                  className="text-black bg-white"
-                >
-                  Tuổi dậy thì có đáng sợ?
+                <option value="Tuổi dậy thì cũng bình thường thôi!" className="bg-white text-black">
+                  Tuổi dậy thì cũng bình thường thôi!
                 </option>
-                <option value="Ngày đèn đỏ" className="text-black bg-white">
-                  Ngày đèn đỏ
+                <option value="Ngày đầu tiên đến trường" className="bg-white text-black">
+                  Ngày đầu tiên đến trường
                 </option>
               </select>
             </div>
 
-            {/* Navigation - tất cả dùng button để đồng nhất */}
-            <nav className="space-y-4 flex-1">
-              <button className="w-full h-9 px-3 rounded bg-white/10 hover:bg-white/20 transition-colors text-sm text-left flex items-center gap-2">
-                <Image
-                  src="/assets/tong_quan.png"
-                  alt="Tổng Quan"
-                  width={18}
-                  height={18}
-                />
-                <span>Tổng Quan</span>
-              </button>
-              <button className="w-full h-9 px-3 rounded bg-white text-black hover:bg-white/90 transition-colors text-sm text-left font-medium flex items-center gap-2">
-                <Image
-                  src="/assets/ke_hoach_hoc_tap.png"
-                  alt="Kế Hoạch Học Tập"
-                  width={18}
-                  height={18}
-                />
-                <span>Kế Hoạch Học Tập</span>
-              </button>
-              <button className="w-full h-9 px-3 rounded bg-white/10 hover:bg-white/20 transition-colors text-sm text-left flex items-center gap-2">
-                <Image
-                  src="/assets/khoa_hoc_cua_toi.png"
-                  alt="Khóa Học Của Tôi"
-                  width={18}
-                  height={18}
-                />
-                <span>Khóa Học Của Tôi</span>
-              </button>
-              <button className="w-full h-9 px-3 rounded bg-white/10 hover:bg-white/20 transition-colors text-sm text-left flex items-center gap-2">
+            <nav className="flex-1 space-y-4">
+              {primaryNav.map((item) => {
+                const isActive =
+                  item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex h-9 items-center gap-2 rounded px-3 text-sm transition-colors ${
+                      isActive
+                        ? "bg-white text-black hover:bg-white/90 font-medium"
+                        : "bg-white/10 text-white/90 hover:bg-white/20"
+                    }`}
+                  >
+                    <Image
+                      src={item.icon}
+                      alt={item.label}
+                      width={18}
+                      height={18}
+                      className={isActive ? "" : "opacity-90"}
+                    />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+
+              <button
+                type="button"
+                className="flex h-9 w-full items-center gap-2 rounded bg-white/10 px-3 text-left text-sm text-white/90 transition-colors hover:bg-white/20"
+              >
                 <Image
                   src="/assets/cua_hang.png"
                   alt="Cửa Hàng"
@@ -101,7 +114,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 />
                 <span>Cửa Hàng</span>
               </button>
-              <button className="w-full h-9 px-3 rounded bg-white/10 hover:bg-white/20 transition-colors text-sm text-left flex items-center gap-2">
+              <button
+                type="button"
+                className="flex h-9 w-full items-center gap-2 rounded bg-white/10 px-3 text-left text-sm text-white/90 transition-colors hover:bg-white/20"
+              >
                 <Image
                   src="/assets/cai_dat.png"
                   alt="Cài Đặt"
@@ -112,34 +128,36 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               </button>
             </nav>
 
-            {/* Nút về trang chủ ở dưới cùng */}
-            <div className="mt-4 pt-3 border-t border-white/20">
-              <button className="w-full h-9 px-3 rounded bg-white/20 hover:bg-white/30 transition-colors text-sm text-left">
-                ← Về trang chủ
+            <div className="mt-4 border-t border-white/20 pt-3">
+              <button
+                type="button"
+                className="h-9 w-full rounded bg-white/20 px-3 text-left text-sm text-white/90 transition-colors hover:bg-white/30"
+              >
+                Đổi về trang chủ
               </button>
             </div>
           </div>
         </aside>
 
-        {/* Main content - không cần dịch chuyển vì sidebar đã fixed */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {/* Top bar - chỉ có stack, chuông, user */}
-          <header className="h-16 md:h-20 bg-transparent text-white flex items-center justify-between px-4 md:px-6">
+        {/* Main content */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="flex h-16 items-center justify-between bg-transparent px-4 text-white md:h-20 md:px-6">
             <div className="flex items-center gap-3 md:gap-4">
-              {/* Nút stack luôn hiện */}
               <button
+                type="button"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="text-2xl hover:bg-white/10 p-1 rounded"
+                className="rounded p-1 text-2xl hover:bg-white/10"
+                aria-label="Đóng/mở menu"
               >
                 ☰
               </button>
-              {/* Logo luôn hiện ở header */}
               <Image
                 src="/assets/page_name.png"
                 alt="Gendy Land"
                 width={120}
                 height={30}
                 className="object-contain"
+                priority
               />
             </div>
             <div className="flex items-center gap-4 text-xl">
@@ -158,19 +176,16 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          {/* Page content */}
-          <main className="flex-1 min-h-0 relative">
-            {/* đảm bảo lớp nội dung trên post background */}
+          <main className="relative min-h-0 flex-1">
             <div className="absolute inset-0 z-0" />
             <div className="relative z-10">{children}</div>
           </main>
         </div>
       </div>
 
-      {/* Overlay để đóng sidebar trên mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-10 md:hidden"
+          className="fixed inset-0 z-10 bg-black/50 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -185,3 +200,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
+
+
+

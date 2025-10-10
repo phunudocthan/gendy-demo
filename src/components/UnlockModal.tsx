@@ -1,5 +1,6 @@
-"use client";
-import { motion, AnimatePresence } from "framer-motion";
+﻿"use client";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface UnlockModalProps {
   isOpen: boolean;
@@ -17,51 +18,61 @@ export default function UnlockModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6"
+          onClick={onCancel}
+        >
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-            onClick={onCancel}
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ type: "spring", damping: 18, stiffness: 260 }}
+            className="relative w-full max-w-xl rounded-[32px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
+            onClick={(event) => event.stopPropagation()}
           >
-            {/* Modal */}
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="text-center">
-                <div className="text-4xl mb-4">🔐</div>
-                <h2 className="text-xl font-bold text-gray-800 mb-2">
-                  Mở khóa {lessonName}?
-                </h2>
-                <p className="text-gray-600 mb-6">
-                  Bạn có muốn mở khóa bài học này để bắt đầu học không?
-                </p>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={onCancel}
-                    className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    onClick={onConfirm}
-                    className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                  >
-                    Mở khóa
-                  </button>
-                </div>
+            <div className="flex flex-col items-center gap-6 px-6 pb-8 pt-10 md:px-10 md:pt-12">
+              <div className="relative flex h-32 w-32 items-center justify-center md:h-36 md:w-36">
+                <Image
+                  src="/assets/confused_pango.png"
+                  alt="Confused Pango"
+                  fill
+                  className="object-contain"
+                  sizes="(min-width: 768px) 9rem, 8rem"
+                  priority
+                />
               </div>
-            </motion.div>
+
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold text-[#2c2c2c] md:text-[28px]">
+                  Mở Khóa Bài Học Mới?
+                </h2>
+                <p className="mt-3 text-base text-[#505050] md:text-lg">
+                  Bạn có muốn mở khóa bài học <span className="font-semibold text-[#2c2c2c]">{lessonName}</span> để bắt đầu học không?
+                </p>
+              </div>
+
+              <div className="flex w-full flex-col gap-3 md:flex-row">
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="flex-1 rounded-[18px] bg-[#dedede] px-5 py-3 text-base font-semibold text-[#595959] transition hover:bg-[#d0d0d0]"
+                >
+                  Chờ xíu! Để tui ôn lại bài cũ!
+                </button>
+                <button
+                  type="button"
+                  onClick={onConfirm}
+                  className="flex-1 rounded-[18px] bg-[#1463ff] px-5 py-3 text-base font-semibold text-white transition hover:bg-[#0d4cdb]"
+                >
+                  Chiến luôn!
+                </button>
+              </div>
+            </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );
