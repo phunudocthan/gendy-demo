@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PangoChat } from "@/components/PangoChat";
 
 const streakDays = [
   { label: "Mon", active: true },
@@ -38,21 +39,6 @@ const courses = [
     pendingLessons: 0,
     pendingQuestions: 6,
     rating: [true, true, true, true, true],
-  },
-];
-
-const conversation = [
-  {
-    speaker: "Pango",
-    text: "Xin chào! Tôi có thể giúp gì cho bạn?",
-  },
-  {
-    speaker: "Bạn",
-    text: "Mình muốn tìm hiểu về giáo dục giới tính! Mình nên bắt đầu như thế nào?",
-  },
-  {
-    speaker: "Pango",
-    text: "Gendy Land có hệ thống bài giảng phân chia theo nhiều độ tuổi! Hãy để mình giúp bạn gợi ý các khóa học phù hợp nhé!",
   },
 ];
 
@@ -127,45 +113,7 @@ export default function OverviewPage() {
         </div>
 
         <aside className="space-y-6 md:sticky md:top-24 md:self-start">
-          <section className="rounded-3xl border border-white/10 bg-black/20 p-6 shadow-xl backdrop-blur">
-            <h2 className="text-xl font-semibold text-white">Trò chuyện cùng Pango</h2>
-            <div className="mt-4 inline-flex max-w-xs rounded-3xl border border-white/40 bg-white px-4 py-3 text-sm text-slate-700">
-              Gendy Land có hệ thống bài giảng phân chia theo nhiều độ tuổi! Hãy để mình gợi ý
-              các khóa học phù hợp nhé!
-            </div>
-            <div className="mt-6 flex flex-col items-center">
-              <Image
-                src="/assets/pango.png"
-                alt="Linh vật Pango"
-                width={220}
-                height={240}
-                className="drop-shadow-xl"
-                priority
-              />
-            </div>
-            <div className="mt-6 space-y-3 rounded-3xl border border-white/10 bg-black/40 p-4 text-sm text-white/80">
-              {conversation.map((entry, index) => (
-                <p key={index} className="leading-relaxed">
-                  <span className="font-semibold text-white">{entry.speaker}:</span>{" "}
-                  <span className="text-white/80">{entry.text}</span>
-                </p>
-              ))}
-            </div>
-            <div className="mt-4 flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-4 py-2">
-              <input
-                type="text"
-                placeholder="Nhập câu hỏi bạn muốn hỏi..."
-                className="flex-1 bg-transparent text-sm text-white placeholder-white/50 outline-none"
-              />
-              <button
-                type="button"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-400 text-base font-semibold text-slate-900 transition hover:bg-orange-300"
-                aria-label="Gửi câu hỏi"
-              >
-                ➜
-              </button>
-            </div>
-          </section>
+          <PangoChat />
         </aside>
       </div>
     </div>
